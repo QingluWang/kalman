@@ -58,6 +58,9 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2 -DEIGEN_NO_DEBUG")
 # Examples
 if(KALMAN_BUILD_EXAMPLES)
   add_executable(example_robot1 "examples/Robot1/main.cpp")
+  # wql begin
+  add_executable(example_ugv "examples/UGV/main.cpp")
+  # wql end
 endif()
 
 # Unit Tests

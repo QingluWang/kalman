@@ -26,10 +26,10 @@ typedef UGV::State<T> State;
 typedef UGV::Control<T> Control;
 typedef UGV::SystemModel<T> SystemModel;
 
-typedef Robot1::PositionMeasurement<T> PositionMeasurement;
-typedef Robot1::OrientationMeasurement<T> OrientationMeasurement;
-typedef Robot1::PositionMeasurementModel<T> PositionModel;
-typedef Robot1::OrientationMeasurementModel<T> OrientationModel;
+typedef UGV::PositionMeasurement<T> PositionMeasurement;
+typedef UGV::OrientationMeasurement<T> OrientationMeasurement;
+typedef UGV::PositionMeasurementModel<T> PositionModel;
+typedef UGV::OrientationMeasurementModel<T> OrientationModel;
 
 int main(int argc, char** argv)
 {
@@ -43,8 +43,7 @@ int main(int argc, char** argv)
     SystemModel sys;
     
     // Measurement models
-    // Set position landmarks at (-10, -10) and (30, 75)
-    PositionModel pm(-10, -10, 30, 75);
+    PositionModel pm;
     OrientationModel om;
     
     // Random number generation (for noise simulation)
@@ -84,9 +83,18 @@ int main(int argc, char** argv)
         x = sys.f(x, u);
         
         // Add noise: Our robot move is affected by noise (due to actuator failures)
-        x.x() += systemNoise*noise(generator);
-        x.y() += systemNoise*noise(generator);
-        x.theta() += systemNoise*noise(generator);
+        x.p_x() += systemNoise*noise(generator);
+        x.p_y() += systemNoise*noise(generator);
+        x.p_z() += systemNoise*noise(generator);
+        x.v_x() += systemNoise*noise(generator);
+        x.v_y() += systemNoise*noise(generator);
+        x.v_z() += systemNoise*noise(generator);
+        x.theta_r() += systemNoise*noise(generator);
+        x.theta_p() += systemNoise*noise(generator);
+        x.theta_y() += systemNoise*noise(generator);
+        x.omega_x() += systemNoise*noise(generator);
+        x.omega_y() += systemNoise*noise(generator);
+        x.omega_z() += systemNoise*noise(generator);
         
         // Predict state for current time-step using the filters
         auto x_pred = predictor.predict(sys, u);
@@ -99,7 +107,9 @@ int main(int argc, char** argv)
             OrientationMeasurement orientation = om.h(x);
             
             // Measurement is affected by noise as well
-            orientation.theta() += orientationNoise * noise(generator);
+            orientation.theta_r() += orientationNoise * noise(generator);
+            orientation.theta_p() += orientationNoise * noise(generator);
+            orientation.theta_y() += orientationNoise * noise(generator);
             
             // Update EKF
             x_ekf = ekf.update(om, orientation);
@@ -125,10 +135,10 @@ int main(int argc, char** argv)
         }
         
         // Print to stdout as csv format
-        std::cout   << x.x() << "," << x.y() << "," << x.theta() << ","
-                    << x_pred.x() << "," << x_pred.y() << "," << x_pred.theta()  << ","
-                    << x_ekf.x() << "," << x_ekf.y() << "," << x_ekf.theta()  << ","
-                    << x_ukf.x() << "," << x_ukf.y() << "," << x_ukf.theta()
+        std::cout   << x.p_x() << "," << x.p_y() << "," << x.theta_r() << ","<< x.theta_p() << ","<< x.theta_y() << ","
+                    << x_pred.p_x() << "," << x_pred.p_y() << "," << x_pred.theta_r() << ","<< x_pred.theta_p() << ","<< x_pred.theta_y() << ","
+                    << x_ekf.p_x() << "," << x_ekf.p_y() << "," << x_ekf.theta_r() << ","<< x_ekf.theta_p() << ","<< x_ekf.theta_y() << ","
+                    << x_ukf.p_x() << "," << x_ukf.p_y() << "," << x_ukf.theta_r() << ","<< x_ukf.theta_p() << ","<< x_ukf.theta_y()
                     << std::endl;
     }
     
