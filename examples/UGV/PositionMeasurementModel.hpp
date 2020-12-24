@@ -22,15 +22,15 @@ public:
     //! Position
     static constexpr size_t P_X = 0;
     static constexpr size_t P_Y = 0;
-    static constexpr size_t P_Z = 1;
+    static constexpr size_t P_Z = 0;
     
     T p_x()       const { return (*this)[ P_X ]; }
     T p_y()       const { return (*this)[ P_Y ]; }
     T p_z()       const { return (*this)[ P_Z ]; }
     
-    T& p_x()       const { return (*this)[ P_X ]; }
-    T& p_y()       const { return (*this)[ P_Y ]; }
-    T& p_z()       const { return (*this)[ P_Z ]; }
+    T& p_x()            { return (*this)[ P_X ]; }
+    T& p_y()            { return (*this)[ P_Y ]; }
+    T& p_z()            { return (*this)[ P_Z ]; }
 
     //! Distance to landmark 1
     static constexpr size_t D1 = 0;
@@ -79,7 +79,7 @@ public:
      * @param landmark2y The y-position of landmark 2
      * @param landmark2z The z-position of landmark 2
      */
-    PositionMeasurementModel(T landmark1x, T landmark1y,, T landmark1z, T landmark2x, T landmark2y, T landmark2z)
+    PositionMeasurementModel(T landmark1x, T landmark1y, T landmark1z, T landmark2x, T landmark2y, T landmark2z)
     {
         // Save landmark positions
         landmark1 << landmark1x, landmark1y, landmark1z;

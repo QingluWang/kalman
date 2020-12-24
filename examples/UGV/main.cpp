@@ -15,7 +15,7 @@
 #include <iostream>
 #include <random>
 #include <chrono>
-
+#include <fstream>
 
 using namespace KalmanExamples;
 
@@ -43,7 +43,7 @@ int main(int argc, char** argv)
     SystemModel sys;
     
     // Measurement models
-    PositionModel pm;
+    PositionModel pm(-10,-10,0,30,20,0);
     OrientationModel om;
     
     // Random number generation (for noise simulation)
@@ -71,13 +71,21 @@ int main(int argc, char** argv)
     // Standard-Deviation of noise added to all measurement vector components in distance measurements
     T distanceNoise = 0.25;
     
+    // output file stream
+    std::ofstream output_fstream("../examples/UGV/data.csv");
+    if(!output_fstream.is_open())
+        return 0;
     // Simulate for 100 steps
     const size_t N = 100;
     for(size_t i = 1; i <= N; i++)
     {
         // Generate some control input
-        u.v() = 1. + std::sin( T(2) * T(M_PI) / T(N) );
-        u.dtheta() = std::sin( T(2) * T(M_PI) / T(N) ) * (1 - 2*(i > 50));
+        u.a_x() = 1.01;
+        u.a_y() = 1.02;
+        u.a_z() = 0;
+        u.omega_x() = 0.2;
+        u.omega_y() = 0.2;
+        u.omega_z() = 0;
         
         // Simulate system
         x = sys.f(x, u);
@@ -98,7 +106,6 @@ int main(int argc, char** argv)
         
         // Predict state for current time-step using the filters
         auto x_pred = predictor.predict(sys, u);
-        auto x_ekf = ekf.predict(sys, u);
         auto x_ukf = ukf.predict(sys, u);
         
         // Orientation measurement
@@ -111,9 +118,7 @@ int main(int argc, char** argv)
             orientation.theta_p() += orientationNoise * noise(generator);
             orientation.theta_y() += orientationNoise * noise(generator);
             
-            // Update EKF
-            x_ekf = ekf.update(om, orientation);
-            
+
             // Update UKF
             x_ukf = ukf.update(om, orientation);
         }
@@ -124,23 +129,24 @@ int main(int argc, char** argv)
             PositionMeasurement position = pm.h(x);
             
             // Measurement is affected by noise as well
-            position.d1() += distanceNoise * noise(generator);
-            position.d2() += distanceNoise * noise(generator);
+            position.p_x() += distanceNoise * noise(generator);
+            position.p_y() += distanceNoise * noise(generator);
             
-            // Update EKF
-            x_ekf = ekf.update(pm, position);
-            
+
             // Update UKF
             x_ukf = ukf.update(pm, position);
         }
         
         // Print to stdout as csv format
-        std::cout   << x.p_x() << "," << x.p_y() << "," << x.theta_r() << ","<< x.theta_p() << ","<< x.theta_y() << ","
-                    << x_pred.p_x() << "," << x_pred.p_y() << "," << x_pred.theta_r() << ","<< x_pred.theta_p() << ","<< x_pred.theta_y() << ","
-                    << x_ekf.p_x() << "," << x_ekf.p_y() << "," << x_ekf.theta_r() << ","<< x_ekf.theta_p() << ","<< x_ekf.theta_y() << ","
-                    << x_ukf.p_x() << "," << x_ukf.p_y() << "," << x_ukf.theta_r() << ","<< x_ukf.theta_p() << ","<< x_ukf.theta_y()
-                    << std::endl;
+        // std::cout   << x.p_x() << "," << x.p_y() << "," << x.p_z() << "," << x.theta_r() << ","<< x.theta_p() << ","<< x.theta_y() << ","
+        //             << x_pred.p_x() << "," << x_pred.p_y() << "," << x_pred.p_z() << "," << x_pred.theta_r() << ","<< x_pred.theta_p() << ","<< x_pred.theta_y() << ","
+        //             << x_ukf.p_x() << "," << x_ukf.p_y() << "," << x_ukf.p_z() << "," << x_ukf.theta_r() << ","<< x_ukf.theta_p() << ","<< x_ukf.theta_y()
+        //             << std::endl;
+        output_fstream  << x.p_x() << "," << x.p_y()  << "," << x.theta_r() << ","<< x.theta_p() << ","
+                        << x_pred.p_x() << "," << x_pred.p_y() << "," << x_pred.theta_r() << ","<< x_pred.theta_p() << ","
+                        << x_ukf.p_x() << "," << x_ukf.p_y() << "," << x_ukf.theta_r() << ","<< x_ukf.theta_p()
+                        << std::endl;
     }
-    
+    output_fstream.close();
     return 0;
 }

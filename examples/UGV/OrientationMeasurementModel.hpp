@@ -27,9 +27,9 @@ public:
     T theta_r()     const { return (*this)[ THETA_R ]; }
     T theta_p()     const { return (*this)[ THETA_P ]; }
     T theta_y()     const { return (*this)[ THETA_Y ]; }
-    T& theta_r()     const { return (*this)[ THETA_R ]; }
-    T& theta_p()     const { return (*this)[ THETA_P ]; }
-    T& theta_y()     const { return (*this)[ THETA_Y ]; }
+    T& theta_r()          { return (*this)[ THETA_R ]; }
+    T& theta_p()          { return (*this)[ THETA_P ]; }
+    T& theta_y()          { return (*this)[ THETA_Y ]; }
 };
 
 /**

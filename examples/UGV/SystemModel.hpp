@@ -1,7 +1,9 @@
-#ifndef KALMAN_EXAMPLES1_ROBOT_SYSTEMMODEL_HPP_
-#define KALMAN_EXAMPLES1_ROBOT_SYSTEMMODEL_HPP_
+#ifndef KALMAN_EXAMPLES1_UGV_SYSTEMMODEL_HPP_
+#define KALMAN_EXAMPLES1_UGV_SYSTEMMODEL_HPP_
 
 #include <kalman/LinearizedSystemModel.hpp>
+#include <iostream>
+
 
 namespace KalmanExamples
 {
@@ -22,48 +24,49 @@ class State : public Kalman::Vector<T, 12>
 public:
     KALMAN_VECTOR(State, T, 12)
     
+    //! 0-11是12维向量的索引
     //! Position
     static constexpr size_t P_X = 0;
-    static constexpr size_t P_Y = 0;
-    static constexpr size_t P_Z = 1;
+    static constexpr size_t P_Y = 1;
+    static constexpr size_t P_Z = 2;
     //! Velocity
-    static constexpr size_t V_X = 0;
-    static constexpr size_t V_Y = 0;
-    static constexpr size_t V_Z = 0;
+    static constexpr size_t V_X = 3;
+    static constexpr size_t V_Y = 4;
+    static constexpr size_t V_Z = 5;
     //! Orientation
-    static constexpr size_t THETA_R = 0;
-    static constexpr size_t THETA_P = 0;
-    static constexpr size_t THETA_Y = 0;
+    static constexpr size_t THETA_R = 6;
+    static constexpr size_t THETA_P = 7;
+    static constexpr size_t THETA_Y = 8;
     //! Angular velocity
-    static constexpr size_t OMEGA_X = 0;
-    static constexpr size_t OMEGA_Y = 0;
-    static constexpr size_t OMEGA_Z = 0;
+    static constexpr size_t OMEGA_X = 9;
+    static constexpr size_t OMEGA_Y = 10;
+    static constexpr size_t OMEGA_Z = 11;
     
-    T p_x()       const { return (*this)[ P_X ]; }
-    T p_y()       const { return (*this)[ P_Y ]; }
-    T p_z()       const { return (*this)[ P_Z ]; }
-    T v_x()     const { return (*this)[ V_x ]; }
-    T v_y()     const { return (*this)[ V_y ]; }
-    T v_z()     const { return (*this)[ V_z ]; }
+    T p_x()         const { return (*this)[ P_X ]; }
+    T p_y()         const { return (*this)[ P_Y ]; }
+    T p_z()         const { return (*this)[ P_Z ]; }
+    T v_x()         const { return (*this)[ V_X ]; }
+    T v_y()         const { return (*this)[ V_Y ]; }
+    T v_z()         const { return (*this)[ V_Z ]; }
     T theta_r()     const { return (*this)[ THETA_R ]; }
     T theta_p()     const { return (*this)[ THETA_P ]; }
     T theta_y()     const { return (*this)[ THETA_Y ]; }
-    T omega_x()   const { return (*this)[ OMEGA_X ]; }
-    T omega_y()   const { return (*this)[ OMEGA_Y ]; }
-    T omega_z()   const { return (*this)[ OMEGA_Z ]; }
+    T omega_x()     const { return (*this)[ OMEGA_X ]; }
+    T omega_y()     const { return (*this)[ OMEGA_Y ]; }
+    T omega_z()     const { return (*this)[ OMEGA_Z ]; }
     
-    T& p_x()       const { return (*this)[ P_X ]; }
-    T& p_y()       const { return (*this)[ P_Y ]; }
-    T& p_z()       const { return (*this)[ P_Z ]; }
-    T& v_x()     const { return (*this)[ V_x ]; }
-    T& v_y()     const { return (*this)[ V_y ]; }
-    T& v_z()     const { return (*this)[ V_z ]; }
-    T& theta_r()     const { return (*this)[ THETA_R ]; }
-    T& theta_p()     const { return (*this)[ THETA_P ]; }
-    T& theta_y()     const { return (*this)[ THETA_Y ]; }
-    T& omega_x()   const { return (*this)[ OMEGA_X ]; }
-    T& omega_y()   const { return (*this)[ OMEGA_Y ]; }
-    T& omega_z()   const { return (*this)[ OMEGA_Z ]; }
+    T& p_x()         { return (*this)[ P_X ]; }
+    T& p_y()         { return (*this)[ P_Y ]; }
+    T& p_z()         { return (*this)[ P_Z ]; }
+    T& v_x()         { return (*this)[ V_X ]; }
+    T& v_y()         { return (*this)[ V_Y ]; }
+    T& v_z()         { return (*this)[ V_Z ]; }
+    T& theta_r()     { return (*this)[ THETA_R ]; }
+    T& theta_p()     { return (*this)[ THETA_P ]; }
+    T& theta_y()     { return (*this)[ THETA_Y ]; }
+    T& omega_x()     { return (*this)[ OMEGA_X ]; }
+    T& omega_y()     { return (*this)[ OMEGA_Y ]; }
+    T& omega_z()     { return (*this)[ OMEGA_Z ]; }
 };
 
 /**
@@ -83,26 +86,26 @@ public:
     
     //! Acceleration
     static constexpr size_t A_X = 0;
-    static constexpr size_t A_Y = 0;
-    static constexpr size_t A_Z = 0;
+    static constexpr size_t A_Y = 1;
+    static constexpr size_t A_Z = 2;
     //! Angular velocity
-    static constexpr size_t OMEGA_X = 0;
-    static constexpr size_t OMEGA_Y = 0;
-    static constexpr size_t OMEGA_Z = 0;
+    static constexpr size_t OMEGA_X = 3;
+    static constexpr size_t OMEGA_Y = 4;
+    static constexpr size_t OMEGA_Z = 5;
     
-    T a_x()     const { return (*this)[ A_X ]; }
-    T a_y()     const { return (*this)[ A_Y ]; }
-    T a_z()     const { return (*this)[ A_Z ]; }
+    T a_x()       const { return (*this)[ A_X ]; }
+    T a_y()       const { return (*this)[ A_Y ]; }
+    T a_z()       const { return (*this)[ A_Z ]; }
     T omega_x()   const { return (*this)[ OMEGA_X ]; }
     T omega_y()   const { return (*this)[ OMEGA_Y ]; }
     T omega_z()   const { return (*this)[ OMEGA_Z ]; }
     
-    T& a_x()     const { return (*this)[ A_X ]; }
-    T& a_y()     const { return (*this)[ A_Y ]; }
-    T& a_z()     const { return (*this)[ A_Z ]; }
-    T& omega_x()   const { return (*this)[ OMEGA_X ]; }
-    T& omega_y()   const { return (*this)[ OMEGA_Y ]; }
-    T& omega_z()   const { return (*this)[ OMEGA_Z ]; }
+    T& a_x()        { return (*this)[ A_X ]; }
+    T& a_y()        { return (*this)[ A_Y ]; }
+    T& a_z()        { return (*this)[ A_Z ]; }
+    T& omega_x()    { return (*this)[ OMEGA_X ]; }
+    T& omega_y()    { return (*this)[ OMEGA_Y ]; }
+    T& omega_z()    { return (*this)[ OMEGA_Z ]; }
 };
 
 /**

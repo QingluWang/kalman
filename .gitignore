@@ -8,3 +8,7 @@ CMakeLists.txt.user
 # Project
 *build
 documentation
+
+*.csv
+
+settings.json
